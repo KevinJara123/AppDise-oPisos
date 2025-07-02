@@ -1,0 +1,227 @@
+/* Evita scroll horizontal */
+* {
+  box-sizing: border-box;
+}
+/* Fuente y fondo general */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f5f7fa, #e2e6ec);
+  color: #2c3e50;
+}
+
+/* Sidebar izquierda */
+.sidebar {
+  min-width: 320px;
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Espaciado general */
+.sidebar label,
+.sidebar select,
+.sidebar button,
+.preset-colors {
+  margin-bottom: 10px;
+}
+
+/* Estilo del select */
+.sidebar select {
+  width: 100%;
+  padding: 8px 12px;
+  background-color: #297fb9;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.sidebar select:hover {
+  background-color: #3498db;
+}
+
+/* Contenedor de botones de color */
+.preset-colors {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+  max-width: 100%;
+}
+
+/* Fila de colores */
+.color-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+}
+
+/* Botones de color */
+.preset-colors button {
+  width: 30px;
+  height: 30px;
+  border: none;
+  outline: 2px solid #fff;
+  cursor: pointer;
+  margin-right: 5px;
+  flex-shrink: 0;
+}
+.preset-colors button:last-child {
+  margin-right: 0;
+}
+
+/* Selector personalizado */
+.sidebar .color-picker {
+  width: 100%;
+  height: 40px;
+  border: none;
+  border-radius: 5px;
+}
+
+/* Botones generales */
+button {
+  padding: 8px 12px;
+  background-color: #2980b9;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+}
+button:hover {
+  background-color: #3498db;
+}
+
+/* Contenido principal */
+.main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  padding: 30px 20px;
+  overflow-y: auto;
+}
+
+/* Título principal */
+h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #2c3e50;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Contenedor de la grilla */
+.grid {
+  display: grid;
+  gap: 4px;
+  justify-content: center;
+  margin-top: 20px;
+  padding: 15px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Celdas */
+.cell {
+  background-color: white;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  box-shadow: inset 0 0 3px rgba(0,0,0,0.05);
+}
+.cell:hover {
+  transform: scale(1.05);
+}
+
+/* Contador de colores */
+.stats {
+  margin-top: 25px;
+  background-color: #ffffff;
+  padding: 15px 20px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 450px;
+  font-size: 15px;
+  color: #2c3e50;
+}
+.stats h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-weight: 600;
+  font-size: 18px;
+}
+#capture {
+  background: #2c3e50; /* color de fondo de la imagen */
+  padding: 20px;
+  border-radius: 10px;
+  
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+  }
+
+  body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+  }
+
+  .main {
+    padding: 10px;
+    width: 100%;
+     overflow-x: hidden;
+  }
+
+  .grid {
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 5px;
+  }
+
+  .preset-colors {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .color-row {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .preset-colors button {
+    margin-right: 0;
+  }
+  #capture {
+  background: #2980b9; /* color de fondo de la imagen */
+  
+}
+
+}

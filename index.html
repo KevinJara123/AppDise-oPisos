@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diseño de Pisos</title>
+  <link rel="stylesheet" href="CSS/style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2980b9">
+</head>
+<body>
+  <div class="sidebar">
+    <div class="preset-colors">
+      <div class="color-row">
+        <button style="background:#333333" onclick="setColor('#333333')" title="Gris oscuro"></button>
+        <button style="background:#999999" onclick="setColor('#999999')" title="Gris claro"></button>
+        <button style="background:#d70000" onclick="setColor('#d70000')" title="Rojo oscuro"></button>
+        <button style="background:#f26c00" onclick="setColor('#f26c00')" title="Naranja"></button>
+        <button style="background:#0066cc" onclick="setColor('#0066cc')" title="Azul oscuro"></button>
+        <button style="background:#663399" onclick="setColor('#663399')" title="Violeta"></button>
+        <button style="background:#66cc00" onclick="setColor('#66cc00')" title="Verde lima"></button>
+        <button style="background:#ffff00" onclick="setColor('#ffff00')" title="Amarillo"></button>
+      </div>
+      <div class="color-row">
+        <button style="background:#2b1d0e" onclick="setColor('#2b1d0e')" title="Marrón oscuro"></button>
+        <button style="background:#9a8f84" onclick="setColor('#9a8f84')" title="Beige"></button>
+        <button style="background:#f60000" onclick="setColor('#f60000')" title="Rojo"></button>
+        <button style="background:#ff9900" onclick="setColor('#ff9900')" title="Naranja claro"></button>
+        <button style="background:#0099ff" onclick="setColor('#0099ff')" title="Celeste"></button>
+        <button style="background:#cc00cc" onclick="setColor('#cc00cc')" title="Fucsia"></button>
+        <button style="background:#00cc00" onclick="setColor('#00cc00')" title="Verde"></button>
+        <button style="background:#ffcc00" onclick="setColor('#ffcc00')" title="Amarillo mostaza"></button>
+      </div>
+    </div>
+
+    <label for="colorPicker">Color actual:</label>
+    <input type="color" id="colorPicker" class="color-picker" value="#00ff00" />
+
+    <label for="tileSize">Tamaño de baldosa:</label>
+    <select id="tileSize">
+      <option value="25">25 x 25 cm</option>
+      <option value="30">30 x 30 cm</option>
+    </select>
+
+    <button onclick="clearColors()">Limpiar</button>
+    <button id="downloadBtn">Descargar PNG</button>
+  </div>
+
+  <div class="main">
+    <h1>Diseñador de Pisos</h1>
+    <div id="capture">
+      <div class="grid" id="grid"></div>
+      <div class="stats" id="stats"></div>
+    </div>
+  </div>
+
+
+  <script>
+    if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then(() => {
+      console.log('Service Worker registrado con éxito');
+    }).catch((err) => {
+      console.error('Error al registrar el Service Worker:', err);
+    });
+  });
+}
+
+  </script>
+  <script src="JS/main.js"></script>
+</body>
+</html>
