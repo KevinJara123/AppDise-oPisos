@@ -1,24 +1,48 @@
-const gridSize = 12;
+// 🔹 Antes: const gridSize = 12;
+let gridWidth = 12;
+let gridHeight = 12;
+
 const grid = document.getElementById('grid');
 const stats = document.getElementById('stats');
 const colorPicker = document.getElementById('colorPicker');
 const tileSizeSelect = document.getElementById('tileSize');
 const downloadBtn = document.getElementById('downloadBtn');
 const capture = document.getElementById('capture');
+
 let colorCount = {};
 
 function setColor(color) {
   colorPicker.value = color;
 }
 
+// 🔹 NUEVA FUNCIÓN
+function applyDimensions() {
+  const widthMeters = parseFloat(document.getElementById('widthMeters').value);
+  const heightMeters = parseFloat(document.getElementById('heightMeters').value);
+  const tileCm = parseInt(tileSizeSelect.value);
+
+  if (!widthMeters || !heightMeters) {
+    alert("Ingresá medidas válidas");
+    return;
+  }
+
+  const tileMeters = tileCm / 100;
+
+  gridWidth = Math.round(widthMeters / tileMeters);
+  gridHeight = Math.round(heightMeters / tileMeters);
+
+  createGrid();
+}
+
 function createGrid() {
   grid.innerHTML = '';
   colorCount = {};
   const size = parseInt(tileSizeSelect.value);
-  grid.style.gridTemplateColumns = `repeat(${gridSize}, ${size}px)`;
-  grid.style.gridTemplateRows = `repeat(${gridSize}, ${size}px)`;
 
-  for (let i = 0; i < gridSize * gridSize; i++) {
+  grid.style.gridTemplateColumns = `repeat(${gridWidth}, ${size}px)`;
+  grid.style.gridTemplateRows = `repeat(${gridHeight}, ${size}px)`;
+
+  for (let i = 0; i < gridWidth * gridHeight; i++) {
     const cell = document.createElement('div');
     cell.classList.add('cell');
     cell.style.width = `${size}px`;
@@ -33,7 +57,11 @@ function createGrid() {
 function paintCell(cell) {
   const color = colorPicker.value;
   const prevColor = cell.style.backgroundColor;
-  const hasPrevColor = prevColor && prevColor !== '' && prevColor !== 'white' && prevColor !== 'rgb(255, 255, 255)';
+  const hasPrevColor =
+    prevColor &&
+    prevColor !== '' &&
+    prevColor !== 'white' &&
+    prevColor !== 'rgb(255, 255, 255)';
 
   if (hasPrevColor) {
     try {
@@ -84,7 +112,6 @@ function clearColors() {
 
 tileSizeSelect.addEventListener('change', createGrid);
 
-// ✅ Validación + prompt de nombre de archivo
 downloadBtn.addEventListener('click', () => {
   const cells = document.querySelectorAll('.cell');
   const hasColor = Array.from(cells).some(cell => {
@@ -98,7 +125,7 @@ downloadBtn.addEventListener('click', () => {
   }
 
   const fileName = prompt('¿Con qué nombre querés guardar el archivo?', 'diseño_pisos');
-  if (!fileName) return; // Canceló
+  if (!fileName) return;
 
   html2canvas(capture).then((canvas) => {
     const link = document.createElement('a');
