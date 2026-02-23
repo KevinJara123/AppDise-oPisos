@@ -1,143 +1,198 @@
-// 🔹 Antes: const gridSize = 12;
-let gridWidth = 12;
-let gridHeight = 12;
+let isMouseDown = false;
+let totalTiles = 0;
 
-const grid = document.getElementById('grid');
-const stats = document.getElementById('stats');
-const colorPicker = document.getElementById('colorPicker');
-const tileSizeSelect = document.getElementById('tileSize');
-const downloadBtn = document.getElementById('downloadBtn');
-const capture = document.getElementById('capture');
+document.addEventListener("mousedown", () => isMouseDown = true);
+document.addEventListener("mouseup", () => isMouseDown = false);
 
-let colorCount = {};
+/* ================= GENERAR GRILLA ================= */
+function generateGrid() {
+  const tileSize = parseFloat(document.getElementById("tileSize").value);
 
-function setColor(color) {
-  colorPicker.value = color;
-}
+  const sections = [
+    { w: parseFloat(w1.value), h: parseFloat(h1.value) },
+    { w: parseFloat(w2.value), h: parseFloat(h2.value) },
+    { w: parseFloat(w3.value), h: parseFloat(h3.value) },
+    { w: parseFloat(w4.value), h: parseFloat(h4.value) }
+  ].filter(s => s.w && s.h);
 
-// 🔹 NUEVA FUNCIÓN
-function applyDimensions() {
-  const widthMeters = parseFloat(document.getElementById('widthMeters').value);
-  const heightMeters = parseFloat(document.getElementById('heightMeters').value);
-  const tileCm = parseInt(tileSizeSelect.value);
+  if (sections.length === 0) return;
 
-  if (!widthMeters || !heightMeters) {
-    alert("Ingresá medidas válidas");
-    return;
-  }
+  const maxWidth = Math.max(...sections.map(s => s.w));
+  const cols = Math.ceil(maxWidth / tileSize);
 
-  const tileMeters = tileCm / 100;
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  grid.style.gridTemplateColumns = `repeat(${cols}, 22px)`;
 
-  gridWidth = Math.round(widthMeters / tileMeters);
-  gridHeight = Math.round(heightMeters / tileMeters);
+  totalTiles = 0;
 
-  createGrid();
-}
+  sections.forEach(section => {
+    const sectionRows = Math.ceil(section.h / tileSize);
+    const sectionCols = Math.ceil(section.w / tileSize);
 
-function createGrid() {
-  grid.innerHTML = '';
-  colorCount = {};
-  const size = parseInt(tileSizeSelect.value);
+    for (let r = 0; r < sectionRows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const cell = document.createElement("div");
+        cell.classList.add("cell");
 
-  grid.style.gridTemplateColumns = `repeat(${gridWidth}, ${size}px)`;
-  grid.style.gridTemplateRows = `repeat(${gridHeight}, ${size}px)`;
+        if (c < sectionCols) {
+          totalTiles++;
+          cell.addEventListener("mousedown", paintCell);
+          cell.addEventListener("mouseover", function () {
+            if (isMouseDown) paintCell.call(this);
+          });
+        } else {
+          cell.style.visibility = "hidden";
+        }
 
-  for (let i = 0; i < gridWidth * gridHeight; i++) {
-    const cell = document.createElement('div');
-    cell.classList.add('cell');
-    cell.style.width = `${size}px`;
-    cell.style.height = `${size}px`;
-    cell.addEventListener('click', () => paintCell(cell));
-    grid.appendChild(cell);
-  }
-
-  updateStats();
-}
-
-function paintCell(cell) {
-  const color = colorPicker.value;
-  const prevColor = cell.style.backgroundColor;
-  const hasPrevColor =
-    prevColor &&
-    prevColor !== '' &&
-    prevColor !== 'white' &&
-    prevColor !== 'rgb(255, 255, 255)';
-
-  if (hasPrevColor) {
-    try {
-      const prev = rgbToHex(prevColor);
-      colorCount[prev] = (colorCount[prev] || 1) - 1;
-    } catch (e) {
-      console.warn('Color anterior inválido:', prevColor);
+        grid.appendChild(cell);
+      }
     }
-  }
-
-  cell.style.backgroundColor = color;
-  const colorKey = color.toLowerCase();
-  colorCount[colorKey] = (colorCount[colorKey] || 0) + 1;
-
-  updateStats();
-}
-
-function rgbToHex(rgb) {
-  const rgbArr = rgb.match(/\d+/g);
-  if (!rgbArr) throw new Error('Color no válido');
-  return '#' + rgbArr.map(x => (+x).toString(16).padStart(2, '0')).join('');
-}
-
-function updateStats() {
-  stats.innerHTML = '<h3>Conteo por color:</h3>';
-  let total = 0;
-
-  for (let color in colorCount) {
-    if (colorCount[color] > 0) {
-      total += colorCount[color];
-      stats.innerHTML += `
-        <div>
-          <span style="display:inline-block;width:15px;height:15px;background:${color};border:1px solid #000;margin-right:5px;"></span>
-          ${color}: ${colorCount[color]}
-        </div>`;
-    }
-  }
-
-  stats.innerHTML += `<hr><strong>Total de baldosas pintadas: ${total}</strong>`;
-}
-
-function clearColors() {
-  const cells = document.querySelectorAll('.cell');
-  cells.forEach(cell => (cell.style.backgroundColor = 'white'));
-  colorCount = {};
-  updateStats();
-}
-
-tileSizeSelect.addEventListener('change', createGrid);
-
-downloadBtn.addEventListener('click', () => {
-  const cells = document.querySelectorAll('.cell');
-  const hasColor = Array.from(cells).some(cell => {
-    const bg = cell.style.backgroundColor;
-    return bg && bg !== '' && bg !== 'white' && bg !== 'rgb(255, 255, 255)';
   });
 
-  if (!hasColor) {
-    alert('La grilla está vacía. Pintá al menos una baldosa antes de descargar.');
-    return;
+  document.getElementById("tileCount").innerText =
+    "Baldosas totales: " + totalTiles;
+
+  updateColorStats();
+}
+
+/* ================= PINTAR ================= */
+function paintCell() {
+  const selectedColor = document.getElementById("colorPicker").value;
+
+  if (this.style.backgroundColor === selectedColor) {
+    this.style.backgroundColor = "white";
+  } else {
+    this.style.backgroundColor = selectedColor;
   }
 
-  const fileName = prompt('¿Con qué nombre querés guardar el archivo?', 'diseño_pisos');
-  if (!fileName) return;
+  updateColorStats();
+}
 
-  html2canvas(capture).then((canvas) => {
-    const link = document.createElement('a');
-    link.download = `${fileName}.png`;
-    link.href = canvas.toDataURL();
-    link.click();
+/* ================= LIMPIAR ================= */
+function clearGrid() {
+  document.querySelectorAll(".cell").forEach(cell => {
+    if (cell.style.visibility !== "hidden") {
+      cell.style.backgroundColor = "white";
+    }
   });
-});
+  updateColorStats();
+}
 
-// Cargar html2canvas
-const script = document.createElement('script');
-script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
-document.body.appendChild(script);
+/* ================= ESTADÍSTICAS ================= */
+function updateColorStats() {
+  const tileSize = parseFloat(document.getElementById("tileSize").value);
+  const tileArea = tileSize * tileSize;
 
-createGrid();
+  const cells = document.querySelectorAll(".cell");
+  const colorMap = {};
+
+  cells.forEach(cell => {
+    if (cell.style.visibility === "hidden") return;
+
+    const color = cell.style.backgroundColor;
+    if (color && color !== "white") {
+      if (!colorMap[color]) colorMap[color] = 0;
+      colorMap[color]++;
+    }
+  });
+
+  const statsContainer = document.getElementById("colorStats");
+  statsContainer.innerHTML = "";
+
+  for (let color in colorMap) {
+    const count = colorMap[color];
+    const m2 = (count * tileArea).toFixed(2);
+
+    const line = document.createElement("p");
+    line.innerHTML =
+      `<span style="display:inline-block;width:15px;height:15px;background:${color};margin-right:6px;"></span>
+       ${count} baldosas — ${m2} m²`;
+
+    statsContainer.appendChild(line);
+  }
+}
+
+/* ================= PDF 1 HOJA (HORIZONTAL) ================= */
+async function exportPDF() {
+  const jsPDF = window.jspdf.jsPDF;
+  const grid = document.getElementById("grid");
+  const resumen = document.querySelector(".stats-export");
+
+  const canvasGrid = await html2canvas(grid, { scale: 3, useCORS: true });
+  const canvasResumen = await html2canvas(resumen, { scale: 2, useCORS: true });
+
+  const pdf = new jsPDF({
+    orientation: "landscape",
+    unit: "mm",
+    format: "legal"
+  });
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 10;
+  const usableWidth = pageWidth - margin * 2;
+  const usableHeight = pageHeight - margin * 2;
+
+  // Grilla
+  let gridWidth = usableWidth;
+  let gridHeight = canvasGrid.height * gridWidth / canvasGrid.width;
+  if (gridHeight > usableHeight * 0.9) {
+    gridHeight = usableHeight * 0.9;
+    gridWidth = canvasGrid.width * gridHeight / canvasGrid.height;
+  }
+
+  const posX = (pageWidth - gridWidth) / 2;
+  const posY = margin;
+
+  pdf.addImage(canvasGrid.toDataURL("image/png"), "PNG", posX, posY, gridWidth, gridHeight);
+
+  // Resumen
+  const resumenWidth = usableWidth * 0.6;
+  let resumenHeight = canvasResumen.height * resumenWidth / canvasResumen.width;
+  const maxResumenHeight = pageHeight - margin - (posY + gridHeight + 5);
+  if (resumenHeight > maxResumenHeight) resumenHeight = maxResumenHeight;
+
+  pdf.addImage(
+    canvasResumen.toDataURL("image/png"),
+    "PNG",
+    margin,
+    posY + gridHeight + 5,
+    resumenWidth,
+    resumenHeight
+  );
+
+  pdf.save("plano-horizontal-grande.pdf");
+}
+
+/* ================= PDF VARIAS HOJAS (HORIZONTAL) ================= */
+async function exportPDFMulti() {
+  const jsPDF = window.jspdf.jsPDF;
+  const element = document.getElementById("exportArea");
+
+  const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+  const imgData = canvas.toDataURL("image/png");
+
+  const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 10;
+
+  const imgWidth = pageWidth - 2 * margin;
+  const imgHeight = canvas.height * imgWidth / canvas.width;
+
+  let heightLeft = imgHeight;
+  let position = margin;
+
+  pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+  heightLeft -= (pageHeight - 2 * margin);
+
+  while (heightLeft > 0) {
+    position = heightLeft - imgHeight + margin;
+    pdf.addPage();
+    pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+    heightLeft -= (pageHeight - 2 * margin);
+  }
+
+  pdf.save("plano-varias-hojas.pdf");
+}

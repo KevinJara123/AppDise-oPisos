@@ -1,69 +1,74 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Diseño de Pisos</title>
-  <link rel="stylesheet" href="CSS/style.css">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#2980b9">
+<meta charset="UTF-8">
+<title>Plano de Baldosas</title>
+<link rel="stylesheet" href="CSS/style.css">
 </head>
 <body>
-  <div class="sidebar">
-    <div class="preset-colors">
-      <div class="color-row">
-        <button style="background:#333333" onclick="setColor('#333333')" title="Gris oscuro"></button>
-        <button style="background:#999999" onclick="setColor('#999999')" title="Gris claro"></button>
-        <button style="background:#d70000" onclick="setColor('#d70000')" title="Rojo oscuro"></button>
-        <button style="background:#f26c00" onclick="setColor('#f26c00')" title="Naranja"></button>
-        <button style="background:#0066cc" onclick="setColor('#0066cc')" title="Azul oscuro"></button>
-        <button style="background:#663399" onclick="setColor('#663399')" title="Violeta"></button>
-        <button style="background:#66cc00" onclick="setColor('#66cc00')" title="Verde lima"></button>
-        <button style="background:#ffff00" onclick="setColor('#ffff00')" title="Amarillo"></button>
-      </div>
-      <div class="color-row">
-        <button style="background:#2b1d0e" onclick="setColor('#2b1d0e')" title="Marrón oscuro"></button>
-        <button style="background:#9a8f84" onclick="setColor('#9a8f84')" title="Beige"></button>
-        <button style="background:#f60000" onclick="setColor('#f60000')" title="Rojo"></button>
-        <button style="background:#ff9900" onclick="setColor('#ff9900')" title="Naranja claro"></button>
-        <button style="background:#0099ff" onclick="setColor('#0099ff')" title="Celeste"></button>
-        <button style="background:#cc00cc" onclick="setColor('#cc00cc')" title="Fucsia"></button>
-        <button style="background:#00cc00" onclick="setColor('#00cc00')" title="Verde"></button>
-        <button style="background:#ffcc00" onclick="setColor('#ffcc00')" title="Amarillo mostaza"></button>
-      </div>
+
+<div class="sidebar">
+
+<h2>Secciones</h2>
+
+<div class="section-input">
+<h4>Sección 1</h4>
+<input type="number" id="w1" placeholder="Ancho (m)" step="0.01">
+<input type="number" id="h1" placeholder="Largo (m)" step="0.01">
+</div>
+
+<div class="section-input">
+<h4>Sección 2</h4>
+<input type="number" id="w2" placeholder="Ancho (m)" step="0.01">
+<input type="number" id="h2" placeholder="Largo (m)" step="0.01">
+</div>
+
+<div class="section-input">
+<h4>Sección 3</h4>
+<input type="number" id="w3" placeholder="Ancho (m)" step="0.01">
+<input type="number" id="h3" placeholder="Largo (m)" step="0.01">
+</div>
+
+<div class="section-input">
+<h4>Sección 4</h4>
+<input type="number" id="w4" placeholder="Ancho (m)" step="0.01">
+<input type="number" id="h4" placeholder="Largo (m)" step="0.01">
+</div>
+
+<label>Tamaño Baldosa</label>
+<select id="tileSize">
+<option value="0.25">25x25</option>
+<option value="0.30">30x30</option>
+</select>
+
+<button onclick="generateGrid()">Generar Plano</button>
+
+<hr>
+
+<label>Color</label>
+<input type="color" id="colorPicker">
+
+<button onclick="exportPDF()">Exportar PDF (1 hoja)</button>
+<button onclick="exportPDFMulti()">Exportar PDF (varias hojas)</button>
+<button onclick="clearGrid()">Limpiar</button>
+
+</div>
+
+<div class="main">
+  <div id="exportArea">
+    <div id="grid" class="grid"></div>
+
+    <div class="stats-export">
+      <h3>Resumen</h3>
+      <p id="tileCount">Baldosas: 0</p>
+      <div id="colorStats"></div>
     </div>
-
-    <label for="colorPicker">Color actual:</label>
-    <input type="color" id="colorPicker" class="color-picker" value="#00ff00" />
-
-    <!-- 🔹 AGREGADO -->
-    <label>Ancho en metros:</label>
-    <input type="number" id="widthMeters" step="0.01">
-
-    <label>Largo en metros:</label>
-    <input type="number" id="heightMeters" step="0.01">
-
-    <button onclick="applyDimensions()">Aplicar medidas</button>
-    <!-- 🔹 FIN AGREGADO -->
-
-    <label for="tileSize">Tamaño de baldosa:</label>
-    <select id="tileSize">
-      <option value="25">25 x 25 cm</option>
-      <option value="30">30 x 30 cm</option>
-    </select>
-
-    <button onclick="clearColors()">Limpiar</button>
-    <button id="downloadBtn">Descargar PNG</button>
   </div>
+</div>
 
-  <div class="main">
-    <h1>Diseñador de Pisos</h1>
-    <div id="capture">
-      <div class="grid" id="grid"></div>
-      <div class="stats" id="stats"></div>
-    </div>
-  </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="JS/main.js"></script>
 
-  <script src="JS/main.js"></script>
 </body>
 </html>
